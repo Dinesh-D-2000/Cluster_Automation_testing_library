@@ -7,6 +7,6 @@ setup(
     author='Dinesh-D-2000',
     author_email='dineshdeena488@gmail.com',
     url="https://github.com/Dinesh-D-2000/Cluster_Automation_testing_library",
-    packages=find_packages(include=["Cluster_Automation_testing_library"]),
+    packages=find_packages(include=["Cluster_Automation_testing_library", "Cluster_Automation_testing_library.*"]),
     include_package_data=True,
 )
