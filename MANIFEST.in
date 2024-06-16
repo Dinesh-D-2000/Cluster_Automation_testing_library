@@ -1,3 +1,3 @@
 include README.md
 include LICENSE
-recursive-include Cluster_Automation_testing_library *.py
+recursive-include Cluster_Automation_testing_library.*
