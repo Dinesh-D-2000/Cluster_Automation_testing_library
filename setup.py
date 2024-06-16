@@ -6,5 +6,7 @@ setup(
     description='Library for automation testing of digital instrument clusters.',
     author='Dinesh-D-2000',
     author_email='dineshdeena488@gmail.com',
-    packages=find_packages(),
+    url = "https://github.com/Dinesh-D-2000/Cluster_Automation_testing_library"
+    packages=find_packages(include=["Cluster_Automation_testing_library"]),
+    include_package_data=True,
 )
