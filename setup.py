@@ -10,3 +10,6 @@ setup(
     packages=find_packages(include=["Cluster_Automation_testing_library", "Cluster_Automation_testing_library.*"]),
     include_package_data=True,
 )
+
+print(find_packages(include=["Cluster_Automation_testing_library", "Cluster_Automation_testing_library.*"]))
+
