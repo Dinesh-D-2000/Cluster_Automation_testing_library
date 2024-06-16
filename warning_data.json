@@ -1,0 +1,14 @@
+[
+{
+        "warning_id": "W123",
+        "warning_text": "Active ParkSense Searching",
+       "top_left_coordinate": [660,182],
+        "bottom_right_coordinate":[1530,285]
+    },
+    {
+        "warning_id": "W456",
+        "warning_text": "Fuel Economy",
+      "top_left_coordinate": [660,182],
+        "bottom_right_coordinate":[1530,285]
+    }
+]
