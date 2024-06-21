@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='Cluster_Automation_testing_library',
+    name='cluster_hmi_test_lib',
     use_scm_version=True,
     description='Library for automation testing of digital instrument clusters.',
     author='Dinesh-D-2000',
