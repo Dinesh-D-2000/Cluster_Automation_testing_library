@@ -21,8 +21,9 @@ class Error(Exception):
 
 class ValidationApi:
     def initialise_webdriver(self):
+        self.curr_dir = os.path.dirname(os.path.abspath(__file__))
         browser_path = r"C:\Program Files\Mozilla Firefox\firefox.exe"
-        driver_path = r"D:\Automation_testing\drivers\geckodriver.exe"
+        driver_path = self.curr_dir + r"\venv\Lib\site-packages\drivers\geckodriver.exe"
         s = Service(executable_path=driver_path)
         o = Options()
         o.binary_location = browser_path
@@ -50,7 +51,8 @@ class ValidationApi:
 
     def capture_screen(self):
         if self.driver.title == "CLUSTER HMI DISPLAY":
-            path = fr"D:\Automation_testing\Logs\{self.logs}\screenshot.png"
+            D:\MY_OFFICIAL_PROJECTS\CLUSTER_HMI_TESTING\cluster_hmi_tests\hmi_tests\Logs
+            path = self.curr_dir + fr"\cluster_hmi_tests\hmi_tests\Logs\{self.logs}\screenshot.png"
             self.driver.save_screenshot(path)
             self.logger.info(f"Screenshot successfully captured and saved in path:{path}")
             return path
@@ -58,7 +60,7 @@ class ValidationApi:
     def icon_db_load(self):
 
         try:
-            execute_sql_file(r"D:\Automation_testing\test_lib\icons.sql")
+            execute_sql_file(self.curr_dir + r"\venv\Lib\site-packages\test_lib\icons.sql")
             self.logger.info("ICON DB sucessfully loaded")
         except:
             self.logger.error("ICON DB IS NOT SUCCESSFULLY LOADED")
@@ -72,7 +74,7 @@ class ValidationApi:
         blob_data = cursor.fetchone()[0]
         conn.commit()
         conn.close()
-        with open(f"D:\\Automation_testing\\Logs\\{self.logs}\\database_icon_" + name + ".png", 'wb') as file:
+        with open(self.curr_dir + rf"\cluster_hmi_tests\hmi_tests\Logs\{self.logs}\database_icon_" + name + ".png", 'wb') as file:
             file.write(blob_data)
 
     def verify_telltale_status(self, telltale_mode, icon_data, frame_data):
@@ -83,7 +85,7 @@ class ValidationApi:
         icon = icon_data["telltale_icon"]
         self.read_database_icon_and_save(icon)
         self.logger.info(f"{icon} is sucessfully read from the database")
-        icon = cv2.imread(f"D:\\Automation_testing\\Logs\\{self.logs}\\database_icon_{icon}.png")
+        icon = cv2.imread(self.curr_dir + rf"\cluster_hmi_tests\hmi_tests\Logs\{self.logs}\database_icon_{icon}.png")
 
         full_screenshot = Image.open(frame_data)
 
@@ -92,9 +94,9 @@ class ValidationApi:
 
         compare_icon = Image.open(frame_data)
         compare_icon = compare_icon.crop((top_left[0], top_left[1], bottom_right[0], bottom_right[1]))
-        compare_icon.save(f"D:\\Automation_testing\\Logs\\{self.logs}\\compare_icon.png")
+        compare_icon.save(self.curr_dir + rf"\cluster_hmi_tests\hmi_tests\Logs\{self.logs}\compare_icon.png")
 
-        compare_icon = cv2.imread(f"D:\\Automation_testing\\Logs\\{self.logs}\\compare_icon.png")
+        compare_icon = cv2.imread(self.curr_dir + rf"\cluster_hmi_tests\hmi_tests\Logs\{self.logs}\compare_icon.png")
         icon = cv2.cvtColor(icon, cv2.COLOR_BGR2GRAY)
 
         compare_icon = cv2.cvtColor(compare_icon, cv2.COLOR_BGR2GRAY)
@@ -107,7 +109,7 @@ class ValidationApi:
         h, w = icon.shape
         bottom_right = (top_left[0] + w, top_left[1] + h)
         detected_roi = full_screenshot.crop((top_left[0], top_left[1], bottom_right[0], bottom_right[1]))
-        detected_roi.save(f"D:\\Automation_testing\\Logs\\{self.logs}\\detected_icon.png")
+        detected_roi.save(self.curr_dir + rf"\cluster_hmi_tests\hmi_tests\Logs\{self.logs}\detected_icon.png")
         self.logger.info(f"Detection result for {icon_data['telltale_icon']}")
 
         if max_val >= confidence and telltale_mode == "ON":
@@ -133,18 +135,18 @@ class ValidationApi:
         """
         This method will verify if the warning test is present in the HMI
         """
-        with open(r"D:\Automation_testing\test_lib\warning_data.json", 'r') as file:
+        with open(self.curr_dir + r"\venv\Lib\site-packages\test_lib\warning_data.json", 'r') as file:
             data = json.load(file)
             for i in range(len(data)):
                 if data[i]["warning_id"] == warning_id:
                     top_left = data[i]["top_left_coordinate"]
                     bottom_right = data[i]["bottom_right_coordinate"]
                     warning_text = data[i]["warning_text"]
-        pytesseract.pytesseract.tesseract_cmd = r"D:\Automation_testing\drivers\tesseract\tesseract.exe"
+        pytesseract.pytesseract.tesseract_cmd = self.curr_dir + r"\venv\Lib\site-packages\drivers\tesseract\tesseract.exe"
         full_screenshot = Image.open(frame_data)
         roi = full_screenshot.crop((top_left[0], top_left[1], bottom_right[0], bottom_right[1]))
-        roi.save(f"D:\\Automation_testing\\Logs\\{self.logs}\\given_region.png")
-        roi = Image.open(f"D:\\Automation_testing\\Logs\\{self.logs}\\given_region.png")
+        roi.save(self.curr_dir + rf"\cluster_hmi_tests\hmi_tests\Logs\{self.logs}\given_region.png")
+        roi = Image.open(self.curr_dir + rf"\cluster_hmi_tests\hmi_tests\Logs\{self.logs}\given_region.png")
         extracted_text = pytesseract.image_to_string(roi)
         if warning_text in extracted_text:
             self.logger.info(f"Warning {warning_id} with text {warning_text} is ON")

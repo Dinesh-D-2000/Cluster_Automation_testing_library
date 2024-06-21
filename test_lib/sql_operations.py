@@ -1,8 +1,9 @@
 import sqlite3
-
+import os
 # Define a function to create a connection and cursor
 def get_connection():
-    conn = sqlite3.connect(r'D:\Automation_testing\test_lib\icons.db')
+    curr_dir = os.path.dirname(os.path.abspath(__file__))
+    conn = sqlite3.connect(curr_dir + r"\venv\Lib\site-packages\test_lib\icons.db")
     cursor = conn.cursor()
     return conn, cursor
 

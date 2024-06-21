@@ -1,3 +1,4 @@
+import os
 
 
 def insert_image(name, image_path):
@@ -5,13 +6,13 @@ def insert_image(name, image_path):
         blob_data = image.read()
         print(blob_data.hex())
 
-   
 
-#insert_image("icn_abs_image", r"D:\Automation_testing\abs_yellow.png" )
-insert_image("icn_tpms_image", r"D:\Automation_testing\icons\icn_tpms.png")
+curr_dir = os.path.dirname(os.path.abspath(__file__))
+
+insert_image("icn_tpms_image", curr_dir + r"\icons\icn_tpms.png")
 
 
 
-    
-    
+
+
 
