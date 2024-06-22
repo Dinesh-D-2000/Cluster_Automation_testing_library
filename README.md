@@ -1,4 +1,4 @@
-# cluster_hmi_test_lib
+# Library for Automation testing on Digital Instrument cluster HMI
 This repository contains the APIs required for Automation testing on Digital instrument clusters.
 <table>
   <thead>
