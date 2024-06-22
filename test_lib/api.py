@@ -13,7 +13,6 @@ import time
 import pytesseract
 import json
 
-
 class Error(Exception):
     def __init__(self, message):
         super().__init__(message)
@@ -21,8 +20,13 @@ class Error(Exception):
 curr_dir =  os.path.dirname(os.path.abspath(__file__))
 curr_dir_1 = curr_dir.split("test_lib")[0]
 curr_dir_2 = curr_dir.split("venv")[0]
+
 class ValidationApi:
     def initialise_webdriver(self):
+        """
+        Initiaises the webdriver. Uses Mozilla Firefox browser with geckodriver support
+        :return: Returns the driver object
+        """
         browser_path = r"C:\Program Files\Mozilla Firefox\firefox.exe"
         driver_path = curr_dir_1 + r"drivers\geckodriver.exe"
         s = Service(executable_path=driver_path)
@@ -32,25 +36,40 @@ class ValidationApi:
         return driver
 
     def get_url(self):
+        """
+        Launches the cluster HMI display over the browser
+        :return: None
+        """
         self.driver = self.initialise_webdriver()
         self.driver.get(url= curr_dir_1 + r"webpage\cluster_hmi.html")
         time.sleep(5)
         self.logger.info("URL SUCCESSFULLY LOADED")
 
     def press_btn(self, btn_id):
+        """
+        Presses the button in the Cluster HMI
+        :param btn_id: Type of button needs to be clicked
+        :return: None
+        """
         if self.driver.title == "CLUSTER HMI DISPLAY":
             self.button = self.driver.find_element(by=By.ID, value=btn_id)
             self.button.click()
             self.logger.info(f"Button with ID:{btn_id} is pressed")
 
     def setup_logger(self):
-        # Clear any previous handlers associated with the logger
+        """
+        Starts the logging service
+        :return: Logger object and Log path
+        """
         for handler in logging.root.handlers[:]:
             logging.root.removeHandler(handler)
-        # Enable logger
         self.logs, self.logger = enable_logger()
 
     def capture_screen(self):
+        """
+        Captures the screenshot at an instance
+        :return: Returns the path of the saved screenshot image
+        """
         if self.driver.title == "CLUSTER HMI DISPLAY":
             path = curr_dir_2 + fr"\cluster_hmi_tests\hmi_tests\Logs\{self.logs}\screenshot.png"
             self.driver.save_screenshot(path)
@@ -58,7 +77,10 @@ class ValidationApi:
             return path
 
     def icon_db_load(self):
-
+        """
+        Loads the icon.sql which contains all the images into icons.db database
+        :return: None
+        """
         try:
             execute_sql_file(curr_dir_1 + r"test_resources\icons.sql")
             self.logger.info("ICON DB sucessfully loaded")
@@ -67,6 +89,12 @@ class ValidationApi:
             raise Error("ICON DB IS NOT SUCCESSFULLY LOADED")
 
     def read_database_icon_and_save(self, name):
+        """
+        checks for the given icon name in the icon database and converts it to image and stores in
+        the logs.
+        :param name: icon_name
+        :return: None
+        """
         conn, cursor = get_connection()
         cursor.execute('''
             SELECT image FROM icons WHERE name = ?
@@ -79,9 +107,12 @@ class ValidationApi:
 
     def verify_telltale_status(self, telltale_mode, icon_data, frame_data):
         """
-        This method would verify the telltale is ON/OFF
+        This method Checks the presence of the telltale icon in the HMI
+        :param telltale_mode: Status of the telltale "ON/OFF"
+        :param icon_data: a dict which contains the icon_name and its coordinates
+        :param frame_data: screenshot where validation should be performed
+        :return: True/False
         """
-
         icon = icon_data["telltale_icon"]
         self.read_database_icon_and_save(icon)
         self.logger.info(f"{icon} is sucessfully read from the database")
@@ -118,6 +149,7 @@ class ValidationApi:
             self.logger.info(f"bottom right coordinates: {bottom_right}")
             self.logger.info(f"ICON saved as detected_icon_{icon_data['telltale_icon']}.png")
             self.logger.info(f"confidence_detected: {max_val}")
+            return True
         elif max_val < confidence and telltale_mode == "ON":
             self.logger.error("TELLTALE STATUS IS NOT ON")
             self.logger.info(f"confidence_detected: {max_val}")
@@ -125,15 +157,20 @@ class ValidationApi:
         elif telltale_mode == "OFF" and max_val < confidence:
             self.logger.info("TELLTALE STATUS IS OFF")
             self.logger.info(f"confidence_detected: {max_val}")
-
+            return True
         elif telltale_mode == "OFF" and max_val >= confidence:
             self.logger.error("TELLTALE STATUS IS NOT OFF")
             self.logger.info(f"confidence_detected: {max_val}")
             raise Error("TELLTALE STATUS IS NOT OFF")
+        return False
 
     def verify_warning_status(self, warning_status, warning_id, frame_data):
         """
-        This method will verify if the warning test is present in the HMI
+        This method will check the given warning text is present in the HMI
+        :param warning_status: Status of the warning ON/OFF
+        :param warning_id: ID of the warning from the warning_data.json
+        :param frame_data: screenshot where validation should be performed
+        :return: True/False
         """
         with open(curr_dir_1 + r"test_resources\warning_data.json", 'r') as file:
             data = json.load(file)
@@ -156,3 +193,4 @@ class ValidationApi:
             self.logger.error(f"Warning {warning_id} is NOT ON")
             self.logger.info(f"Detected Text is \n{extracted_text}")
             raise Error(f"Warning {warning_id} is NOT ON")
+        return True

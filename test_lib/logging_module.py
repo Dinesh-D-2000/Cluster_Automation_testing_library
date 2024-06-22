@@ -2,6 +2,10 @@ import logging
 import os
 import random
 def enable_logger():
+    """
+    Logging functionality is enabled here.
+    :return: Logger object and Log path
+    """
     logs="logs_"
     curr_dir = os.path.dirname(os.path.abspath(__file__))
     curr_dir = curr_dir.split("venv")[0]
@@ -19,5 +23,4 @@ def enable_logger():
     if not logger.handlers:
         logger.addHandler(file_handler)
         logger.addHandler(console_handler)
-
     return logs, logger
